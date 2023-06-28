@@ -1,21 +1,21 @@
+import QuestionItem from "components/QuestionItem";
 import Layout from "layout";
-
-const questions = [
-	{
-		id: "1",
-		title: "What is the capital of Sweden?",
-		correct: "Stockholm",
-		count: 4,
-	},
-	{
-		id: "2",
-		title: "What is the capital of Sweden?",
-		correct: "Stockholm",
-		count: 4,
-	},
-];
+import { useEffect, useState } from "react";
+import { apiGetQuestions } from "utils/question";
 
 const Questions = () => {
+	const [questions, setQuestions] = useState<any[]>([]);
+
+	const getQuestions = async () => {
+		const result = await apiGetQuestions();
+		console.log(result);
+		setQuestions(result.data);
+	};
+
+	useEffect(() => {
+		getQuestions();
+	}, []);
+
 	return (
 		<Layout>
 			<div className="px-4 sm:px-6 lg:px-8">
@@ -61,30 +61,22 @@ const Questions = () => {
 									</tr>
 								</thead>
 								<tbody className="divide-y divide-gray-200">
-									{questions.map(question => (
-										<tr key={question.id}>
-											<td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-												{question.id}
-											</td>
-											<td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-												{question.title}
-											</td>
-											<td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-												{question.correct}
-											</td>
-											<td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-												{question.count}
-											</td>
-											<td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-0">
-												<a href="#" className="text-indigo-600 hover:text-indigo-900">
-													View<span className="sr-only">, {question.id}</span>
-												</a>
-												<a href="#" className="ml-2 text-indigo-600 hover:text-indigo-900">
-													Edit<span className="sr-only">, {question.id}</span>
-												</a>
+									{questions.length === 0 ? (
+										<tr>
+											<td colSpan={5} className="py-4 text-center">
+												No questions found.
 											</td>
 										</tr>
-									))}
+									) : (
+										questions.map((question, index) => (
+											<QuestionItem
+												question={question}
+												index={index}
+												refresh={getQuestions}
+												key={index}
+											/>
+										))
+									)}
 								</tbody>
 							</table>
 						</div>
